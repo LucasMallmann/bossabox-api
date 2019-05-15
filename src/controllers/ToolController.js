@@ -23,7 +23,7 @@ class ToolController {
   }
 
   async show (req, res) {
-    const tool = Tool.findById(req.params.id)
+    const tool = await Tool.findById(req.params.id)
     return res.status(200).json(tool)
   }
 
