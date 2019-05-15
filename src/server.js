@@ -25,6 +25,7 @@ class App {
   }
 
   database () {
+    mongoose.set('useFindAndModify', false)
     const { uri } = databaseConfig
     mongoose.connect(uri, {
       useNewUrlParser: true,

@@ -27,7 +27,12 @@ class ToolController {
     return res.status(200).json(tool)
   }
 
-  async update (req, res) {}
+  async update (req, res) {
+    const tool = await Tool.findByIdAndUpdate(req.params.id, req.body, {
+      new: true
+    })
+    return res.json(tool)
+  }
 
   async destroy (req, res) {
     await Tool.findByIdAndRemove(req.params.id)
