@@ -39,10 +39,8 @@ class App {
         return res.status(err.status).json(err)
       }
 
-      if (this.isDev) {
-        const youch = new Youch(err, req)
-        return res.json(await youch.toJSON())
-      }
+      const youch = new Youch(err, req)
+      return res.json(await youch.toJSON())
     })
   }
 }

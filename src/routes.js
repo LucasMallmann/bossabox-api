@@ -6,12 +6,17 @@ const handle = require('express-async-handler')
 const controllers = require('./controllers')
 const toolValidation = require('./validations/Tool')
 const userValidation = require('./validations/User')
-
-routes.get('/', (req, res, next) => {
-  return res.status(200).json({ message: 'hello world' })
-})
+const authMiddleware = require('./middlewares/auth')
 
 routes.post('/user', validate(userValidation), controllers.UserController.store)
+routes.post(
+  '/login',
+  validate(userValidation),
+  controllers.AuthController.login
+)
+
+// All routes bellow are protected with jwt
+routes.use(authMiddleware)
 
 routes.post(
   '/tools',

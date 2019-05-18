@@ -14,7 +14,7 @@ class AuthController {
       return res.status(400).json({ error: "Password didn't match" })
     }
 
-    const token = User.generateToken(user)
+    const token = await User.generateToken(user)
 
     return res.status(200).json({ user, token })
   }
