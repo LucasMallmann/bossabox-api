@@ -16,7 +16,7 @@ class ToolController {
 
     const tools = await Tool.paginate(filters, {
       page: req.query.page || 1,
-      limit: req.query.limit || 10,
+      limit: parseInt(req.query.limit) || 10,
       sort: '-createdAt'
     })
 
@@ -45,7 +45,11 @@ class ToolController {
   }
 
   async destroy (req, res) {
-    await Tool.findByIdAndRemove(req.params.id)
+    const { id } = req.params
+    if (!isValidId(id)) {
+      return res.status(404).json({ error: 'The id provided is not valid' })
+    }
+    await Tool.findByIdAndRemove(id)
     res.send()
   }
 }

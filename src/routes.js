@@ -2,11 +2,14 @@ const express = require('express')
 const routes = express.Router()
 const validate = require('express-validation')
 const handle = require('express-async-handler')
+const cors = require('cors')
 
 const controllers = require('./controllers')
 const toolValidation = require('./validations/Tool')
 const userValidation = require('./validations/User')
 const authMiddleware = require('./middlewares/auth')
+
+routes.use(cors())
 
 routes.post('/user', validate(userValidation), controllers.UserController.store)
 routes.post(

@@ -1,0 +1,232 @@
+openapi: 3.0.0
+info:
+  title: Bossabox Api Challenge
+  description: "This is the documentation about the @bossabox-api challenge. You can find out more information about bossabox here: https://bossabox.com/. The challenge link is here: https://www.notion.so/Back-end-0b2c45f1a00e4a849eefe3b1d57f23c6"
+  version: 0.0.1
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    UnauthorizedError:
+      description: Access token is missing or invalid
+  schemas:
+    UserWithId:
+      properties:
+        _id:
+          type: string
+        email:
+          type: string
+        password: 
+          type: string
+      required:
+        - email
+        - password
+        
+    User:
+      properties:
+        email:
+          type: string
+        password: 
+          type: string
+      required:  
+        - email
+        - password
+    Tool:
+      properties:
+        title:
+          type: string
+        link: 
+          type: string
+        description:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+servers:
+  - url: http://localhost:3000
+    description: Dev server
+paths:
+  /user:
+    post:
+      summary: Create a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '400':
+          description: User already exists
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    type: string
+              example: 
+                error: User already exists
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/UserWithId'
+        '500':
+          description: Internal server error
+
+  /login:
+    post:
+      summary: Login the user and return a token
+      requestBody:
+        required: true
+        content:
+          application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: User logged
+          content:
+            application/json:
+              schema:
+                properties:
+                  user:
+                    $ref: '#/components/schemas/UserWithId'
+                  token:
+                    type: string
+              example: 
+                user:
+                  _id: 5ce06fab022041480dc0cd33
+                  email: lucasmallmann76@gmail.com
+                  password: $2a$08$9lim.cU4Yxb9mnGnHsrkK.ADpZ5gugdRTB4godOTcuog6oJoybGjW
+                token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjZTA2ZmFiMDIyMDQxNDgwZGMwY2QzMyIsImlhdCI6MTU1ODM5OTI2NSwiZXhwIjoxNTU4NDg1NjY1fQ.K2todBBhYnppxo5IwKiwppdPbsTONcHNs5JrRabODIc
+        '400':
+          description: Email or password incorrect
+      
+  /tools:
+    get:
+      security:
+        - bearerAuth: []
+      description: Insert a new tool
+      parameters: 
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: The number of the page in the pagination that it's going to return from database
+        - in: query
+          name: tag
+          schema:
+            type: string
+          description: Tag of the tool you want to search
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          description: Limit of results
+      responses:
+        '200':
+          description: All the tools
+          content:
+            application/json:
+              schema:
+                properties:
+                  docs:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Tool'
+                  total:
+                    type: integer
+                  limit:
+                    type: integer
+                  page:
+                    type: integer
+                  pages:
+                    type: integer
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    post:
+      security:
+        - bearerAuth: []
+      description: Get all the tools
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tool'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tool'
+        '500':
+          description: Internal server error
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /tools/{id}:
+    delete:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The Tool id
+      description: Delete a tool
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          description: Internal Server Error
+          
+    put:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The Tool id
+      description: Update a Tool
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tool'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tool'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Invalid id
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Internal Server Error
+                
+
+      
